@@ -8,6 +8,18 @@
       content="THREADS — a modern fashion store. Clothing and accessories, curated."
     />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script>
+      /* Apply the saved (or system) theme before first paint. */
+      try {
+        var t = localStorage.getItem('threads-theme');
+        if (t !== 'light' && t !== 'dark') {
+          t = window.matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark'
+            : 'light';
+        }
+        document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    </script>
     <title>THREADS — Fashion Store</title>
   </head>
   <body>

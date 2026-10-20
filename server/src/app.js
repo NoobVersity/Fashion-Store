@@ -12,6 +12,7 @@ import categoriesRouter from './routes/categories.js';
 import discountsRouter from './routes/discounts.js';
 import checkoutRouter from './routes/checkout.js';
 import storeSettingsRouter from './routes/storeSettings.js';
+import authRouter from './routes/auth.js';
 
 import adminAuthRouter from './routes/admin/auth.js';
 import adminProductsRouter from './routes/admin/products.js';
@@ -43,6 +44,7 @@ export function createApp() {
   app.use('/api/discounts', discountsRouter);
   app.use('/api/checkout', checkoutRouter);
   app.use('/api/store-settings', storeSettingsRouter);
+  app.use('/api/auth', authRouter);
 
   // ---------------------------------------------------- admin API
   // Every admin endpoint is authenticated on the server, and every

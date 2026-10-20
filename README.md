@@ -28,10 +28,19 @@ public storefront.
   order with a `TH-000000` order number. Duplicate submissions (same
   idempotency token) cannot create a second order.
 - Order confirmation page with the order number and item summary.
+- Optional customer accounts: register / sign in (`/register`, `/login`),
+  an account area (`/account`) with editable contact details and order
+  history, and checkout pre-filled from the account. Guest checkout
+  stays fully available — an account is never required.
 - Clear "simulated payment — no real charge" labeling in cart, checkout
   and confirmation.
 - Loading, empty, error and success states on every data screen;
   responsive from desktop down to mobile.
+- Inline SVG monogram logo (header, footer, admin) — no image assets
+  required for the branding.
+- Dark and light mode: a sun/moon toggle in the header (and admin bar),
+  remembered in `localStorage` and defaulting to the system preference.
+  The theme is applied before first paint, so there is no flash.
 
 ### Admin features (`/admin`, login at `/admin/login`)
 
@@ -39,7 +48,8 @@ public storefront.
   customers, 30-day and all-time revenue, low-stock alerts, recent
   orders, orders-by-status — all from live SQL queries.
 - **Products** — searchable paginated table, create/edit with a
-  size/color/stock variant editor, activate/deactivate, safe deletion
+  size/color/stock variant editor, optional image path (a styled
+  placeholder is used when empty), activate/deactivate, safe deletion
   (products referenced by order history return `409` and are kept).
 - **Categories** — CRUD with unique-name enforcement; deletion is
   refused while products reference the category.
@@ -208,12 +218,14 @@ this single origin.
 
 ```bash
 cd server
-npm test           # node --test: 29 automated tests
+npm test           # node --test: 31 automated tests
 ```
 
 The suite covers authorization (all admin endpoints return `401`
 without a session, generic login errors, logout, password change,
-login rate limiting), checkout integrity (server-side totals, stock
+login rate limiting), customer accounts (register, claiming a guest
+email, login, profile updates, order history, logout, rate limiting),
+checkout integrity (server-side totals, stock
 deduction, over-stock/out-of-stock rejection, discount validation,
 duplicate-token protection), and admin behavior (product/category CRUD
 rules, 409 protections, order transition rules, stock restored exactly
@@ -236,6 +248,8 @@ SQLite database on an ephemeral port — no fixtures, no shared state.
 | `/cart` | Shopping cart and discount entry |
 | `/checkout` | Simulated checkout form |
 | `/order-confirmation` | Order confirmation with order number |
+| `/login`, `/register` | Customer sign-in and registration |
+| `/account` | Signed-in area: contact details + order history |
 | `*` | 404 page |
 
 ### Admin (no link anywhere in the storefront)
@@ -258,6 +272,10 @@ SQLite database on an ephemeral port — no fixtures, no shared state.
 Public: `GET /api/products`, `GET /api/products/:slug`,
 `GET /api/categories`, `POST /api/checkout`,
 `POST /api/discounts/validate`, `GET /api/store-settings/public`.
+
+Customer auth: `POST /api/auth/register`, `POST /api/auth/login`,
+`POST /api/auth/logout`, `GET /api/auth/me`, `PATCH /api/auth/me`,
+`GET /api/auth/orders`.
 
 Admin auth: `POST /api/admin/auth/login`, `POST /api/admin/auth/logout`,
 `GET /api/admin/auth/me`, `POST /api/admin/auth/change-password`.
@@ -287,14 +305,17 @@ CRUD under `/api/admin/products`, `/api/admin/categories`,
   cookie (`Secure` in production); only the HMAC of the token is stored
   server-side, sessions are destroyed on logout and rotated on password
   change. `SESSION_SECRET` is required (and checked for strength) in
-  production.
+  production. Admin and customer sessions use separate cookies, tables
+  and rate-limit counters, so they never interfere with each other.
 - **Authorization:** every `/api/admin/*` endpoint independently runs
   `requireAdmin` — hiding links in the UI is never the security
   mechanism. Frontend route guards are UX only.
 - **CSRF:** same-origin deployment + `SameSite=Lax` cookies plus an
-  Origin/Referer host check on state-changing admin requests.
+  Origin/Referer host check on state-changing admin and customer-auth
+  requests.
 - **Rate limiting:** repeated login failures per email+IP are limited
-  (429 after the configured number of attempts within the window).
+  (429 after the configured number of attempts within the window) —
+  separately for admin and customer sign-ins.
 - **Validation:** every write body and route parameter is validated
   server-side; errors return `{ error, details }` field messages, never
   stack traces.
@@ -377,7 +398,7 @@ threads-fashion-store/
 │   │   ├── components/       # shared UI (Header, ProductCard, Modal, …)
 │   │   ├── pages/            # storefront pages (Home, Catalog, …)
 │   │   ├── admin/            # admin layout, auth, and 13 admin pages
-│   │   ├── context/          # Settings, Cart, Toast providers
+│   │   ├── context/          # Settings, Cart, CustomerAuth, Toast
 │   │   ├── services/api.js   # fetch wrapper for /api
 │   │   ├── styles/           # global.css, storefront.css, admin.css
 │   │   └── utils/format.js   # money/date/status helpers

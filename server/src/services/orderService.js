@@ -171,7 +171,8 @@ export function placeOrder({
       throw new CheckoutError(400, 'Invalid discount — the total cannot be negative.');
     }
 
-    // ---- customer record (guest checkout, one row per email) ---------
+    // ---- customer record (one row per email; shared with accounts —
+    //      contact details only, password_hash is never touched here) --
     const email = customer.email.toLowerCase();
     db.prepare(
       `INSERT INTO customers (name, email, phone)

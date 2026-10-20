@@ -40,6 +40,84 @@
   /* Layout */
   --maxw: 1180px;
   --header-h: 66px;
+
+  /* Theme helpers (light). Dark overrides live in the block below. */
+  color-scheme: light;
+  --on-strong: #ffffff;
+  --header-bg: rgba(255, 255, 255, 0.94);
+  --footer-bg: #17130f;
+  --danger-line: #eccfcd;
+  --danger-hover: #8c2826;
+  --success-line: #cbe3d4;
+  --info-line: #cddced;
+  --warning-line: #e7d4a4;
+
+  /* Admin surfaces (cool grey — deliberately distinct from the storefront) */
+  --a-bg: #f4f5f7;
+  --a-surface: #ffffff;
+  --a-line: #e3e5e9;
+  --a-line-2: #d9dbe0;
+  --a-line-soft: #eef0f3;
+  --a-fill: #fafbfc;
+  --a-text: #1c1e22;
+  --a-muted: #797f89;
+  --a-muted-2: #6a6f78;
+  --a-dim: #33373e;
+  --a-on-strong: #ffffff;
+  --a-strong-hover: #000000;
+}
+
+/* ---------------------------------------------------------------- dark theme
+   Warm editorial dark mode: ink and paper swap roles, the terracotta
+   accent lightens for contrast, soft status tints invert. Applied via
+   <html data-theme="dark"> (see the script in index.html). */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --ink: #f2ede3;
+  --ink-soft: #cec5b6;
+  --paper: #191512;
+  --paper-warm: #1f1a15;
+  --paper-deep: #241f19;
+  --line: #352f27;
+  --line-strong: #4a433a;
+  --muted: #a29889;
+  --accent: #d2795a;
+  --accent-dark: #e08e6f;
+  --accent-soft: #2b1c14;
+  --success: #74b892;
+  --success-soft: #16241b;
+  --warning: #d3a955;
+  --warning-soft: #292013;
+  --danger: #e08582;
+  --danger-soft: #2c1a18;
+  --info: #86aecb;
+  --info-soft: #18242c;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
+
+  --on-strong: #17130f;
+  --header-bg: rgba(25, 21, 18, 0.94);
+  --footer-bg: #12100c;
+  --danger-line: #57302e;
+  --danger-hover: #efaaa7;
+  --success-line: #2e4c3c;
+  --info-line: #33475a;
+  --warning-line: #4d3f1d;
+
+  --a-bg: #121417;
+  --a-surface: #1b1e23;
+  --a-line: #2e3239;
+  --a-line-2: #3b4048;
+  --a-line-soft: #282c32;
+  --a-fill: #22262c;
+  --a-text: #e8eaee;
+  --a-muted: #9aa0aa;
+  --a-muted-2: #a9aeb6;
+  --a-dim: #c6cad1;
+  --a-on-strong: #17191d;
+  --a-strong-hover: #ffffff;
 }
 
 *,
@@ -233,7 +311,7 @@ hr {
   border: 1px solid var(--ink);
   border-radius: var(--radius);
   background: var(--ink);
-  color: #fff;
+  color: var(--on-strong);
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -260,7 +338,7 @@ hr {
 
 .btn-outline:hover:not(:disabled) {
   background: var(--ink);
-  color: #fff;
+  color: var(--on-strong);
 }
 
 .btn-accent {
@@ -288,12 +366,12 @@ hr {
 .btn-danger {
   background: var(--danger);
   border-color: var(--danger);
-  color: #fff;
+  color: var(--on-strong);
 }
 
 .btn-danger:hover:not(:disabled) {
-  background: #8c2826;
-  border-color: #8c2826;
+  background: var(--danger-hover);
+  border-color: var(--danger-hover);
 }
 
 .btn-sm {
@@ -303,6 +381,25 @@ hr {
 
 .btn-block {
   width: 100%;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-soft);
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.theme-toggle:hover {
+  color: var(--accent);
+  border-color: var(--accent);
 }
 
 /* ----------------------------------------------------------------- forms */
@@ -474,7 +571,7 @@ hr {
 
 .error-state {
   background: var(--danger-soft);
-  border-color: #eccfcd;
+  border-color: var(--danger-line);
   color: var(--danger);
 }
 
@@ -578,7 +675,7 @@ hr {
   font-weight: 500;
   border-left: 4px solid var(--ink);
   background: var(--ink);
-  color: #fff;
+  color: var(--on-strong);
   animation: modal-in 0.18s ease-out;
 }
 
@@ -623,7 +720,7 @@ hr {
 .pagination button.active {
   background: var(--ink);
   border-color: var(--ink);
-  color: #fff;
+  color: var(--on-strong);
 }
 
 .pagination button:disabled {

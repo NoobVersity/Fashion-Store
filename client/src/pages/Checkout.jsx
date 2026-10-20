@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext.jsx';
 import { useSettings } from '../context/SettingsContext.jsx';
+import { useCustomerAuth } from '../context/CustomerAuthContext.jsx';
 import api from '../services/api.js';
 import EmptyState from '../components/EmptyState.jsx';
 import FormField from '../components/FormField.jsx';
@@ -14,6 +15,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export default function Checkout() {
   const { items, subtotal, clearCart } = useCart();
   const { money } = useSettings();
+  const { customer } = useCustomerAuth();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({ name: '', email: '', phone: '', shipping_address: '', order_note: '' });
@@ -39,6 +41,17 @@ export default function Checkout() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items.length]);
+
+  // Signed-in customers get their contact details prefilled.
+  useEffect(() => {
+    if (!customer) return;
+    setForm((prev) => ({
+      ...prev,
+      name: prev.name || customer.name,
+      email: prev.email || customer.email,
+      phone: prev.phone || customer.phone,
+    }));
+  }, [customer]);
 
   if (items.length === 0) {
     return (

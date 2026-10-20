@@ -42,3 +42,9 @@ export const loginLimiter = createRateLimiter({
   windowMs: config.loginWindowMs,
   max: config.loginMaxAttempts,
 });
+
+/** Separate counter for customer sign-ins (admin lockouts stay independent). */
+export const customerLoginLimiter = createRateLimiter({
+  windowMs: config.loginWindowMs,
+  max: config.loginMaxAttempts,
+});

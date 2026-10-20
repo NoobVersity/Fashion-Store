@@ -421,7 +421,7 @@ export default function Products() {
               value={form.image_path}
               onChange={setField('image_path')}
               error={errors.image_path}
-              hint="/images/products/item.svg or https://…"
+              hint="Optional — /images/products/item.svg or https://… (a placeholder is shown when empty)"
             />
             <div className="field">
               <label htmlFor="f-active">Status</label>

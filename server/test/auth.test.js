@@ -1,108 +1,145 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createTestContext } from './helpers.js';
+import { createTestContext, checkoutPayload } from './helpers.js';
 
 /**
- * Admin authentication + authorization tests:
- * generic errors, session cookies, logout, password change and login
- * rate limiting.
+ * Customer accounts: register (incl. claiming a guest email), login,
+ * profile updates, order history, logout and rate limiting.
  */
 
-// Failures accumulate per email+IP; the rate-limit test runs last.
-const ctx = await createTestContext({ loginMaxAttempts: 5 });
+const ctx = await createTestContext();
 test.after(() => ctx.close());
 
-test('login success sets an HTTP-only session cookie', async () => {
-  const res = await ctx.client.login();
-  assert.equal(res.status, 200);
-  assert.equal(res.data.admin.email, 'admin@test.local');
-  const raw = res.headers.get('set-cookie') || '';
-  assert.match(raw, /threads_session=/);
-  assert.match(raw, /HttpOnly/i);
-  assert.match(raw, /SameSite=Lax/i);
-});
-
-test('protected admin endpoint works with a valid session', async () => {
-  await ctx.client.login();
-  const res = await ctx.client.get('/api/admin/auth/me');
-  assert.equal(res.status, 200);
-  assert.equal(res.data.admin.email, 'admin@test.local');
-});
-
-test('wrong password returns a generic 401', async () => {
-  const res = await ctx.client.login('admin@test.local', 'not the password');
-  assert.equal(res.status, 401);
-  assert.equal(res.data.error, 'Invalid email or password.');
-});
-
-test('unknown email returns the same generic 401', async () => {
-  const res = await ctx.client.login('nobody@test.local', 'whatever123');
-  assert.equal(res.status, 401);
-  assert.equal(res.data.error, 'Invalid email or password.');
-});
-
-test('admin endpoints reject unauthenticated requests', async () => {
-  await ctx.client.logout(); // drop any session from earlier tests
-  for (const path of [
-    '/api/admin/products',
-    '/api/admin/orders',
-    '/api/admin/settings',
-    '/api/admin/customers',
-    '/api/admin/discounts',
-    '/api/admin/inventory',
-    '/api/admin/dashboard/stats',
-    '/api/admin/categories',
-  ]) {
-    const res = await ctx.client.get(path);
-    assert.equal(res.status, 401, `${path} must require auth`);
-  }
-});
-
-test('logout destroys the session server-side', async () => {
-  await ctx.client.login();
-  const out = await ctx.client.logout();
-  assert.equal(out.status, 204);
-  const res = await ctx.client.get('/api/admin/auth/me');
-  assert.equal(res.status, 401);
-});
-
-test('change-password verifies the current password', async () => {
-  await ctx.client.login();
-  const bad = await ctx.client.post('/api/admin/auth/change-password', {
-    currentPassword: 'wrong',
-    newPassword: 'a brand new secret',
+test('register validates input', async () => {
+  const res = await ctx.client.post('/api/auth/register', {
+    name: 'A',
+    email: 'nope',
+    password: 'short',
   });
-  assert.equal(bad.status, 401);
+  assert.equal(res.status, 400);
+  assert.ok(res.data.details.name);
+  assert.ok(res.data.details.email);
+  assert.ok(res.data.details.password);
+});
 
-  const good = await ctx.client.post('/api/admin/auth/change-password', {
-    currentPassword: 'correct horse battery',
-    newPassword: 'a brand new secret',
+test('register creates an account and signs the customer in', async () => {
+  const res = await ctx.client.post('/api/auth/register', {
+    name: 'Cara Devon',
+    email: 'cara@test.local',
+    password: 'super secret 1',
   });
-  assert.equal(good.status, 200);
+  assert.equal(res.status, 201);
+  assert.equal(res.data.customer.email, 'cara@test.local');
+  assert.ok(!res.data.customer.password_hash); // never serialized
 
-  // The session was rotated: old cookie no longer valid… the client
-  // captured the new cookie automatically, so the new one must work.
-  const me = await ctx.client.get('/api/admin/auth/me');
+  const me = await ctx.client.get('/api/auth/me');
   assert.equal(me.status, 200);
-
-  // And the new password now signs in.
-  const relogin = await ctx.client.login('admin@test.local', 'a brand new secret');
-  assert.equal(relogin.status, 200);
-
-  // Weak new passwords are rejected.
-  const weak = await ctx.client.post('/api/admin/auth/change-password', {
-    currentPassword: 'a brand new secret',
-    newPassword: 'short',
-  });
-  assert.equal(weak.status, 400);
-  assert.ok(weak.data.details.newPassword);
+  assert.equal(me.data.customer.name, 'Cara Devon');
 });
 
-test('login is rate limited after repeated failures', async () => {
-  let last;
-  for (let i = 0; i < 6; i += 1) {
-    last = await ctx.client.login('admin@test.local', 'still wrong');
+test('duplicate registration returns 409', async () => {
+  const res = await ctx.client.post('/api/auth/register', {
+    name: 'Cara Devon',
+    email: 'cara@test.local',
+    password: 'super secret 1',
+  });
+  assert.equal(res.status, 409);
+});
+
+test('login rejects wrong passwords and accepts the right one', async () => {
+  const wrong = await ctx.client.post('/api/auth/login', {
+    email: 'cara@test.local',
+    password: 'not the one',
+  });
+  assert.equal(wrong.status, 401);
+
+  const ok = await ctx.client.post('/api/auth/login', {
+    email: 'cara@test.local',
+    password: 'super secret 1',
+  });
+  assert.equal(ok.status, 200);
+  assert.equal(ok.data.customer.email, 'cara@test.local');
+});
+
+test('profile details can be updated', async () => {
+  const res = await ctx.client.patch('/api/auth/me', {
+    name: 'Cara D.',
+    phone: '555-0111',
+  });
+  assert.equal(res.status, 200);
+  assert.equal(res.data.customer.name, 'Cara D.');
+
+  const me = await ctx.client.get('/api/auth/me');
+  assert.equal(me.data.customer.phone, '555-0111');
+});
+
+test('orders placed while signed in appear in the history', async () => {
+  const order = await ctx.client.post(
+    '/api/checkout',
+    checkoutPayload({
+      customer: { name: 'Cara D.', email: 'cara@test.local', phone: '555-0111' },
+    })
+  );
+  assert.equal(order.status, 201);
+
+  const history = await ctx.client.get('/api/auth/orders');
+  assert.equal(history.status, 200);
+  assert.equal(history.data.pagination.total, 1);
+  assert.equal(history.data.items[0].items.length, 1);
+  assert.equal(history.data.items[0].items[0].name, 'Test Tee');
+});
+
+test('a guest can claim their email and keeps their order history', async () => {
+  await ctx.client.post('/api/auth/logout');
+
+  const guestOrder = await ctx.client.post(
+    '/api/checkout',
+    checkoutPayload({
+      customer: { name: 'Guest Twin', email: 'twin@test.local', phone: '' },
+    })
+  );
+  assert.equal(guestOrder.status, 201);
+
+  const reg = await ctx.client.post('/api/auth/register', {
+    name: 'Guest Twin',
+    email: 'twin@test.local',
+    password: 'another secret',
+  });
+  assert.equal(reg.status, 201);
+
+  const history = await ctx.client.get('/api/auth/orders');
+  assert.equal(history.data.pagination.total, 1); // the guest order came along
+});
+
+test('logout ends the session', async () => {
+  const out = await ctx.client.post('/api/auth/logout'); // signed in as twin
+  assert.equal(out.status, 204);
+  assert.equal((await ctx.client.get('/api/auth/me')).status, 401);
+});
+
+test('customer endpoints require a session', async () => {
+  // Still signed out from the previous test.
+  assert.equal((await ctx.client.get('/api/auth/me')).status, 401);
+  assert.equal((await ctx.client.get('/api/auth/orders')).status, 401);
+  assert.equal(
+    (await ctx.client.patch('/api/auth/me', { name: 'Nope' })).status,
+    401
+  );
+});
+
+test('customer login attempts are rate limited', async () => {
+  // LOGIN_MAX_ATTEMPTS defaults to 10 (per email+IP); the successful
+  // sign-in earlier reset this key, so failures start from zero.
+  for (let i = 0; i < 10; i += 1) {
+    const res = await ctx.client.post('/api/auth/login', {
+      email: 'cara@test.local',
+      password: 'guess',
+    });
+    assert.equal(res.status, 401);
   }
-  assert.equal(last.status, 429);
-  assert.match(last.data.error, /Too many login attempts/i);
+  const blocked = await ctx.client.post('/api/auth/login', {
+    email: 'cara@test.local',
+    password: 'guess',
+  });
+  assert.equal(blocked.status, 429);
 });

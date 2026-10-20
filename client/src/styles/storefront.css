@@ -17,7 +17,7 @@
   left: -9999px;
   top: 0;
   background: var(--ink);
-  color: #fff;
+  color: var(--on-strong);
   padding: 10px 16px;
   z-index: 100;
 }
@@ -33,7 +33,7 @@
   position: sticky;
   top: 0;
   z-index: 40;
-  background: rgba(255, 255, 255, 0.94);
+  background: var(--header-bg);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--line);
 }
@@ -46,7 +46,16 @@
   gap: 20px;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   font-family: var(--font-display);
   font-size: 24px;
   font-weight: 700;
@@ -91,7 +100,7 @@
   padding: 0 5px;
   border-radius: 999px;
   background: var(--accent);
-  color: #fff;
+  color: var(--on-strong);
   font-size: 11.5px;
   display: inline-flex;
   align-items: center;
@@ -327,15 +336,17 @@
   border-radius: 2px;
 }
 
+/* Solid ink label over product photography — theme-independent on
+   purpose, since the artwork stays light in both modes. */
 .flag-out {
-  background: var(--ink);
+  background: #17130f;
   color: #fff;
 }
 
 .flag-low {
   background: var(--warning-soft);
   color: var(--warning);
-  border: 1px solid #e7d4a4;
+  border: 1px solid var(--warning-line);
 }
 
 .product-info {
@@ -471,7 +482,7 @@
 .chip.active {
   background: var(--ink);
   border-color: var(--ink);
-  color: #fff;
+  color: var(--on-strong);
 }
 
 .price-inputs {
@@ -634,7 +645,7 @@
 .color-btn.active {
   background: var(--ink);
   border-color: var(--ink);
-  color: #fff;
+  color: var(--on-strong);
 }
 
 .size-btn:disabled,
@@ -659,7 +670,7 @@
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  border: 1px solid rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--line-strong);
   display: inline-block;
 }
 
@@ -901,7 +912,7 @@
   gap: 12px;
   align-items: flex-start;
   background: var(--info-soft);
-  border: 1px solid #cddced;
+  border: 1px solid var(--info-line);
   color: var(--info);
   border-radius: var(--radius);
   padding: 14px 16px;
@@ -1004,9 +1015,14 @@
 
 .site-footer {
   margin-top: 72px;
-  background: var(--ink);
+  background: var(--footer-bg);
   color: #d9d3c9;
   font-size: 14px;
+}
+
+.footer-logo {
+  display: block;
+  margin: 0 auto 22px;
 }
 
 .footer-top {
@@ -1086,5 +1102,143 @@
   .footer-grid {
     grid-template-columns: 1fr;
     gap: 22px;
+  }
+}
+
+/* ------------------------------------------------------- account & auth */
+
+.account-page {
+  padding: 48px 0 8px;
+}
+
+.auth-card {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 34px 30px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--paper);
+  box-shadow: var(--shadow-sm);
+}
+
+.auth-title {
+  font-size: 24px;
+  margin: 0 0 4px;
+}
+
+.auth-sub {
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.auth-error {
+  background: var(--danger-soft);
+  border: 1px solid var(--danger-line);
+  color: var(--danger);
+  border-radius: var(--radius);
+  padding: 10px 13px;
+  font-size: 13.5px;
+  margin-bottom: 14px;
+}
+
+.auth-alt {
+  text-align: center;
+  font-size: 13.5px;
+  color: var(--muted);
+  margin: 16px 0 0;
+}
+
+.auth-alt a {
+  text-decoration: underline;
+}
+
+.account-grid {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 26px;
+  align-items: start;
+  margin-top: 26px;
+}
+
+.account-grid .auth-card {
+  max-width: none;
+  margin: 0;
+  padding: 26px 24px;
+}
+
+.history-order {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+
+.history-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.history-items {
+  list-style: none;
+  margin: 10px 0;
+  padding: 10px 0 0;
+  border-top: 1px solid var(--line);
+  font-size: 13.5px;
+}
+
+.history-items li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 3px 0;
+  color: var(--ink-soft);
+}
+
+.history-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  border-top: 1px dashed var(--line-strong);
+  padding-top: 8px;
+}
+
+.status-tag {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: var(--paper-deep);
+  color: var(--ink-soft);
+}
+
+.st-processing {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+.st-shipped {
+  background: var(--info-soft);
+  color: var(--info);
+}
+
+.st-delivered {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.st-cancelled {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+@media (max-width: 760px) {
+  .account-grid {
+    grid-template-columns: 1fr;
   }
 }

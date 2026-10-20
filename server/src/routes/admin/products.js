@@ -75,6 +75,7 @@ function readProductInput(req) {
   v.string('image_path', {
     label: 'Image path',
     max: 500,
+    required: false,
     pattern: /^(https?:\/\/|\/|data:image\/)/,
     patternMessage:
       'Image must be an http(s) URL or a local path like /images/products/item.svg.',
@@ -239,7 +240,7 @@ router.post(
           slug,
           v.value.description,
           v.value.price,
-          v.value.image_path,
+          v.value.image_path || '/images/placeholder.svg',
           v.value.is_active ? 1 : 0
         );
       const productId = Number(info.lastInsertRowid);
@@ -315,7 +316,7 @@ router.put(
         slug,
         v.value.description,
         v.value.price,
-        v.value.image_path,
+        v.value.image_path || '/images/placeholder.svg',
         v.value.is_active ? 1 : 0,
         id
       );

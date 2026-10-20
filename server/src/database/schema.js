@@ -65,13 +65,23 @@ export function createSchema(db) {
     -- Guest checkout upserts one row per unique email so the admin area
     -- can list unique customers and their order history.
     CREATE TABLE IF NOT EXISTS customers (
-      id         INTEGER PRIMARY KEY AUTOINCREMENT,
-      name       TEXT NOT NULL,
-      email      TEXT NOT NULL UNIQUE COLLATE NOCASE,
-      phone      TEXT NOT NULL DEFAULT '',
-      created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
-      updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+      id            INTEGER PRIMARY KEY AUTOINCREMENT,
+      name          TEXT NOT NULL,
+      email         TEXT NOT NULL UNIQUE COLLATE NOCASE,
+      phone         TEXT NOT NULL DEFAULT '',
+      password_hash TEXT,                          -- NULL = guest, no account
+      created_at    TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+      updated_at    TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
     );
+
+    CREATE TABLE IF NOT EXISTS customer_sessions (
+      id          TEXT PRIMARY KEY,                -- HMAC of the session token
+      customer_id INTEGER NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
+      expires_at  TEXT NOT NULL,
+      created_at  TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+    );
+    CREATE INDEX IF NOT EXISTS idx_customer_sessions_customer
+      ON customer_sessions(customer_id);
 
     CREATE TABLE IF NOT EXISTS discounts (
       id                   INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -133,4 +143,11 @@ export function createSchema(db) {
       updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
     );
   `);
+
+  // One-time upgrade for databases created before customer accounts
+  // existed (CREATE TABLE IF NOT EXISTS never adds new columns).
+  const customerCols = db.pragma('table_info(customers)');
+  if (!customerCols.some((c) => c.name === 'password_hash')) {
+    db.exec('ALTER TABLE customers ADD COLUMN password_hash TEXT');
+  }
 }

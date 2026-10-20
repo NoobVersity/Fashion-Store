@@ -2,12 +2,16 @@ import { Routes, Route } from 'react-router-dom';
 
 // Storefront
 import StorefrontLayout from './components/StorefrontLayout.jsx';
+import CustomerAuthProvider from './context/CustomerAuthContext.jsx';
 import Home from './pages/Home.jsx';
 import Catalog from './pages/Catalog.jsx';
 import ProductDetails from './pages/ProductDetails.jsx';
 import Cart from './pages/Cart.jsx';
 import Checkout from './pages/Checkout.jsx';
 import OrderConfirmation from './pages/OrderConfirmation.jsx';
+import Login from './pages/Login.jsx';
+import Register from './pages/Register.jsx';
+import CustomerAccount from './pages/Account.jsx';
 import NotFound from './pages/NotFound.jsx';
 
 // Admin (never linked from the storefront)
@@ -32,13 +36,16 @@ export default function App() {
   return (
     <Routes>
       {/* Public storefront */}
-      <Route element={<StorefrontLayout />}>
+      <Route element={<CustomerAuthProvider><StorefrontLayout /></CustomerAuthProvider>}>
         <Route path="/" element={<Home />} />
         <Route path="/catalog" element={<Catalog />} />
         <Route path="/product/:slug" element={<ProductDetails />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/order-confirmation" element={<OrderConfirmation />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/account" element={<CustomerAccount />} />
         <Route path="*" element={<NotFound />} />
       </Route>
 

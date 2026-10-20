@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useSettings } from '../context/SettingsContext.jsx';
+import Logo from './Logo.jsx';
 
 /**
  * Editorial footer: oversized serif wordmark, hairline dividers and
@@ -12,6 +13,7 @@ export default function Footer() {
     <footer className="site-footer">
       <div className="container">
         <div className="footer-top">
+          <Logo size={40} fixed className="footer-logo" />
           <div className="footer-wordmark">{settings.store_name || 'THREADS'}</div>
           <p className="footer-tag">
             {settings.store_description ||

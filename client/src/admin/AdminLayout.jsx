@@ -4,6 +4,8 @@ import { useAdminAuth } from './AdminAuthProvider.jsx';
 import { useToast, ToastViewport } from '../context/ToastContext.jsx';
 import ConfirmDialog from '../components/ConfirmDialog.jsx';
 import ScrollToTop from '../components/ScrollToTop.jsx';
+import Logo from '../components/Logo.jsx';
+import ThemeToggle from '../components/ThemeToggle.jsx';
 import '../styles/admin.css';
 
 /* Minimal 24x24 stroke icons (no icon library needed). */
@@ -135,7 +137,11 @@ export default function AdminLayout() {
 
       <aside className={`admin-sidebar${open ? ' open' : ''}`}>
         <div className="sidebar-brand">
-          THREADS<span>Admin</span>
+          <Logo size={20} fixed />
+          <div>
+            THREADS
+            <span>Admin</span>
+          </div>
         </div>
         <nav className="sidebar-nav" aria-label="Admin navigation">
           {NAV.map((item) => (
@@ -172,6 +178,7 @@ export default function AdminLayout() {
           </button>
           <div className="topbar-title">{currentTitle(location.pathname)}</div>
           <div className="topbar-actions">
+            <ThemeToggle />
             <Link to="/admin/account" className="account-link">
               {admin?.email}
             </Link>

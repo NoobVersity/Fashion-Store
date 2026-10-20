@@ -1,6 +1,7 @@
 import { config } from '../config.js';
 
 export const SESSION_COOKIE = 'threads_session';
+export const CUSTOMER_COOKIE = 'threads_customer_session';
 
 /** Tiny cookie parser (no cookie-parser dependency). */
 export function parseCookies(req) {
@@ -41,4 +42,22 @@ export function clearSessionCookie(res) {
     secure: config.isProduction,
     path: '/',
   });
+}
+
+const cookieOptions = {
+  httpOnly: true,
+  sameSite: 'lax',
+  secure: config.isProduction,
+  path: '/',
+};
+
+export function setCustomerCookie(res, token) {
+  res.cookie(CUSTOMER_COOKIE, token, {
+    ...cookieOptions,
+    maxAge: config.sessionTtlHours * 60 * 60 * 1000,
+  });
+}
+
+export function clearCustomerCookie(res) {
+  res.clearCookie(CUSTOMER_COOKIE, cookieOptions);
 }

@@ -1,5 +1,8 @@
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext.jsx';
+import { useCustomerAuth } from '../context/CustomerAuthContext.jsx';
+import Logo from './Logo.jsx';
+import ThemeToggle from './ThemeToggle.jsx';
 
 /**
  * Public storefront header. NOTE: intentionally contains no admin
@@ -7,12 +10,14 @@ import { useCart } from '../context/CartContext.jsx';
  */
 export default function Header() {
   const { count } = useCart();
+  const { customer } = useCustomerAuth();
 
   return (
     <header className="site-header">
       <div className="container header-inner">
         <Link to="/" className="brand" aria-label="THREADS home">
-          THREADS
+          <Logo size={26} />
+          <span>THREADS</span>
         </Link>
 
         <nav className="main-nav" aria-label="Main navigation">
@@ -28,6 +33,10 @@ export default function Header() {
         </nav>
 
         <div className="header-actions">
+          <Link className="nav-link" to="/account">
+            {customer ? 'Account' : 'Sign in'}
+          </Link>
+          <ThemeToggle />
           <Link
             to="/cart"
             className="cart-link"

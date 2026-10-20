@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAdminAuth } from '../AdminAuthProvider.jsx';
 import FormField from '../../components/FormField.jsx';
+import Logo from '../../components/Logo.jsx';
+import ThemeToggle from '../../components/ThemeToggle.jsx';
 import '../../styles/admin.css';
 
 /**
@@ -38,8 +40,14 @@ export default function AdminLogin() {
 
   return (
     <div className="login-page">
+      <div className="login-theme">
+        <ThemeToggle />
+      </div>
       <div className="login-card">
-        <div className="login-brand">THREADS</div>
+        <div className="login-brand">
+          <Logo size={30} fixed />
+          THREADS
+        </div>
         <p className="login-sub">Admin access</p>
 
         {loading ? (
