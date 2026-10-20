@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 750" role="img">
+  <rect width="600" height="750" fill="#eceae5"/>
+  <path d="M300 262 a20 20 0 1 1 -14 34" fill="none" stroke="#9aa0aa" stroke-width="8" stroke-linecap="round"/>
+  <path d="M300 296 L216 348 L384 348 Z" fill="none" stroke="#9aa0aa" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M252 348 L190 388 L172 452 L224 474 L238 434 L238 596 L362 596 L362 434 L376 474 L428 452 L410 388 L348 348 Z"
+    fill="none" stroke="#9aa0aa" stroke-width="7" stroke-linejoin="round"/>
+  <text x="300" y="668" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="19" letter-spacing="6" fill="#9aa0aa">NO IMAGE</text>
+</svg>

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 720" role="img">
+  <rect width="640" height="720" fill="#f2efe9"/>
+  <circle cx="360" cy="330" r="240" fill="#c86b4a" opacity="0.16"/>
+  <rect x="72" y="470" width="496" height="4" fill="#17181a" opacity="0.18"/>
+  <path d="M320 118 a26 26 0 1 1 -18 44" fill="none" stroke="#17181a" stroke-width="10" stroke-linecap="round"/>
+  <path d="M320 168 L212 236 L428 236 Z" fill="none" stroke="#17181a" stroke-width="9" stroke-linejoin="round"/>
+  <path d="M252 236 L176 286 L152 366 L214 392 L230 344 L230 566 L296 566 L304 350 L320 292 L336 350 L344 566 L410 566 L410 344 L426 392 L488 366 L464 286 L388 236 Z"
+    fill="#26282c"/>
+  <path d="M256 240 L320 292 L304 350 M384 240 L320 292 L336 350" fill="none" stroke="#f2efe9" stroke-width="5" opacity="0.6"/>
+  <circle cx="320" cy="430" r="8" fill="#c86b4a"/>
+  <circle cx="320" cy="486" r="8" fill="#c86b4a"/>
+  <text x="320" y="640" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="34" letter-spacing="10" fill="#17181a">THREADS</text>
+  <text x="320" y="678" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="17" letter-spacing="5" fill="#17181a" opacity="0.55">AUTUMN / WINTER EDIT</text>
+</svg>

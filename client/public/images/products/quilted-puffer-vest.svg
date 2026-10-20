@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 750" role="img">
+  <rect width="600" height="750" fill="#f2efe9"/>
+  <circle cx="300" cy="345" r="212" fill="#eae4d9"/>
+  
+  <path d="M242 190 L242 216 C216 258 212 312 216 348 L216 552 L292 552 L292 262 L300 234 L308 262 L308 552 L384 552 L384 348 C388 312 384 258 358 216 L358 190 C348 236 252 236 242 190 Z"
+    fill="#c86b4a"/>
+  <path d="M220 300 L288 300 M312 300 L380 300" fill="none" stroke="#17181a" stroke-width="3" opacity="0.35"/>
+  <path d="M220 348 L288 348 M312 348 L380 348" fill="none" stroke="#17181a" stroke-width="3" opacity="0.35"/>
+  <path d="M220 396 L288 396 M312 396 L380 396" fill="none" stroke="#17181a" stroke-width="3" opacity="0.35"/>
+  <path d="M220 444 L288 444 M312 444 L380 444" fill="none" stroke="#17181a" stroke-width="3" opacity="0.35"/>
+  <path d="M220 492 L288 492 M312 492 L380 492" fill="none" stroke="#17181a" stroke-width="3" opacity="0.35"/>
+  <circle cx="300" cy="300" r="5.5" fill="#17181a" opacity="0.8"/>
+  <circle cx="300" cy="356" r="5.5" fill="#17181a" opacity="0.8"/>
+  <circle cx="300" cy="412" r="5.5" fill="#17181a" opacity="0.8"/>
+  <circle cx="300" cy="468" r="5.5" fill="#17181a" opacity="0.8"/>
+
+</svg>

@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+
+# Build output
+client/dist/
+
+# Environment / secrets
+.env
+server/.env
+.env.local
+*.local
+
+# Local database files (never submit real data)
+*.sqlite
+*.sqlite3
+*.db
+server/data/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS and editor metadata
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Test / temp artifacts
+coverage/
+*.tmp
+
+# Project archives
+threads-fashion-store.zip
+
